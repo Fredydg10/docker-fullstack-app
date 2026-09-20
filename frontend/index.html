@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Fullstack App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        h1 { color: #667eea; margin-bottom: 10px; }
+        p { color: #666; }
+        #message { 
+            background: #f0f0f0; 
+            padding: 20px; 
+            border-radius: 5px; 
+            margin-top: 20px;
+            font-family: monospace;
+            min-height: 50px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        button:hover { background: #764ba2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Docker Fullstack</h1>
+        <p>Frontend + Backend en contenedores separados</p>
+        <button onclick="fetchData()">Probar Conexión con Backend</button>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        async function fetchData() {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = '<em>Cargando...</em>';
+            
+            try {
+                // Importante: Usamos localhost:3000 porque el backend estará expuesto en ese puerto
+                const response = await fetch('http://localhost:3000/api');
+                const data = await response.json();
+                messageDiv.innerHTML = '<strong style="color: green;"> Éxito:</strong><br>' + data.message;
+            } catch (error) {
+                messageDiv.innerHTML = '<strong style="color: red;">❌ Error:</strong><br>' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

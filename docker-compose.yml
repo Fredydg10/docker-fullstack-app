@@ -1,13 +1,36 @@
-version: '3.8'
 services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: fredy
+      POSTGRES_PASSWORD: secreto123
+      POSTGRES_DB: miapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data # ¡Esto guarda los datos aunque apagues el contenedor!
+
   backend:
     build: ./backend
+    container_name: backend-container
     ports:
       - "3000:3000"
-    container_name: backend-container
+    environment:
+      POSTGRES_USER: fredy
+      POSTGRES_PASSWORD: secreto123
+      POSTGRES_DB: miapp
+      POSTGRES_HOST: db # ¡Aquí está la magia! Docker resuelve 'db' a la IP del contenedor de la BD
+    depends_on:
+      - db # Le dice a Docker: "Prende la BD antes que el backend"
 
   frontend:
     build: ./frontend
+    container_name: frontend-container
     ports:
       - "8080:80"
-    container_name: frontend-container
+    depends_on:
+      - backend
+
+volumes:
+  pgdata: # Declaramos el volumen para que los datos persistan

@@ -1,0 +1,43 @@
+name: CI/CD Pipeline - Docker Fullstack
+
+# El robot se activa cada vez que hagas un push a la rama 'main'
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Paso 1: Descargar tu código del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Paso 2: Configurar Docker en el servidor de GitHub
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Paso 3: Iniciar sesión en Docker Hub (Usando tus secretos)
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Paso 4: Construir y subir la imagen del Backend
+      - name: Build and push Backend image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/mi-backend-devops:latest
+
+      # Paso 5: Construir y subir la imagen del Frontend
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./frontend
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/mi-frontend-devops:latest

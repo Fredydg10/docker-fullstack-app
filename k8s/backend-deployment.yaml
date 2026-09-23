@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: fredydg10/mi-backend-devops:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: POSTGRES_USER
+          value: "fredy"
+        - name: POSTGRES_PASSWORD
+          value: "secreto123"
+        - name: POSTGRES_DB
+          value: "miapp"
+        - name: POSTGRES_HOST
+          value: "postgres-service"

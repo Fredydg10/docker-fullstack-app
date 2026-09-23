@@ -1,20 +1,30 @@
-# Paso 1: Usar una imagen base de Node.js (versión ligera)
+# Paso 1: Usar una imagen base minimalista y segura
 FROM node:18-alpine
 
-# Paso 2: Crear un directorio de trabajo dentro del contenedor
+# Paso 2: Crear un usuario NO ROOT (¡Regla de oro de seguridad!)
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 -G nodejs
+
+# Paso 3: Establecer el directorio de trabajo
 WORKDIR /app
 
-# Paso 3: Copiar los archivos de dependencias
+# Paso 4: Copiar solo lo necesario primero (mejor caché)
 COPY package*.json ./
 
-# Paso 4: Instalar las dependencias (express, cors)
-RUN npm install
+# Paso 5: Instalar dependencias
+RUN npm install --production
 
-# Paso 5: Copiar todo el código del backend al contenedor
+# Paso 6: Copiar el código de la aplicación
 COPY . .
 
-# Paso 6: Exponer el puerto 3000
+# Paso 7: Cambiar la propiedad al usuario no-root
+RUN chown -R nodejs:nodejs /app
+
+# Paso 8: Cambiar al usuario no-root
+USER nodejs
+
+# Paso 9: Exponer el puerto
 EXPOSE 3000
 
-# Paso 7: Comando para iniciar el servidor
-CMD ["npm", "start"]
+# Paso 10: Comando para iniciar la aplicación
+CMD ["node", "server.js"]
